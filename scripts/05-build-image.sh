@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2025 Vasiliy Kovalev <kovalev@altlinux.org>
 
-set -eo pipefail
+set -euo pipefail
 source "$(dirname "$0")/01-setup-env.sh"
 
 # --- CONFIGURATION ---
@@ -57,7 +57,7 @@ mkdir -p "$IMAGE_DIR" "$IMAGE_MOUNT_DIR"
 if [ ! -f "$IMAGE_PATH" ]; then
     echo "Creating ${IMAGE_SIZE_MB}MB raw image..."
     dd if=/dev/zero of="$IMAGE_PATH" bs=1M count="$IMAGE_SIZE_MB"
-    mkfs.ext4 -F "$IMAGE_PATH"
+    sudo mkfs.ext4 -F "$IMAGE_PATH"
 else
     echo "Image $IMAGE_PATH already exists. Skipping creation."
 fi

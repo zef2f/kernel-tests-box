@@ -27,7 +27,7 @@ fi
 
 CONTAINER_NAME=${1:-$DEFAULT_CONTAINER_NAME}
 IMAGE_NAME=${2:-$DEFAULT_IMAGE_NAME}
-REPO_DIR="$(pwd)"
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONTAINER_ID="$(docker ps -aq -f "name=^/${CONTAINER_NAME}$")"
 
 if [ "$(docker ps -q -f "name=^/${CONTAINER_NAME}$")" ]; then
