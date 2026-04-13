@@ -1,0 +1,39 @@
+From 16677c099eb83f13af907090b76a849e2d2d77e4 Mon Sep 17 00:00:00 2001
+From: Vasiliy Kovalev <kovalev@altlinux.org>
+Date: Wed, 24 Sep 2025 13:32:25 +0000
+Subject: [PATCH] sys/syz-sysgen: Hack compile - ignore compilation errors
+ if not amd64
+
+---
+ sys/syz-sysgen/sysgen.go | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/sys/syz-sysgen/sysgen.go b/sys/syz-sysgen/sysgen.go
+index 67ee14d..55774ab 100644
+--- a/sys/syz-sysgen/sysgen.go
++++ b/sys/syz-sysgen/sysgen.go
+@@ -150,11 +150,17 @@ func main() {
+ 		unsupported := make(map[string]int)
+ 		for _, job := range jobs {
+ 			if !job.OK {
+-				fmt.Printf("compilation of %v/%v target failed:\n", job.Target.OS, job.Target.Arch)
+-				for _, msg := range job.Errors {
+-					fmt.Print(msg)
++				// HACK: Only treat amd64 as fatal
++				if job.Target.OS == "linux" && job.Target.Arch == "amd64" {
++					fmt.Printf("compilation of %v/%v target failed:\n",
++							job.Target.OS, job.Target.Arch)
++					for _, msg := range job.Errors {
++						fmt.Print(msg)
++					}
++					os.Exit(1)
+ 				}
+-				os.Exit(1)
++				// For all other arches: silently skip
++				continue
+ 			}
+ 			syscallArchs = append(syscallArchs, job.ArchData)
+ 			for u := range job.Unsupported {
+-- 
+2.50.1
+
